@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask API 測試頁面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .api-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .api-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4285F4;
+            margin-bottom: 10px;
+        }
+        button {
+            background: #4285F4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #3367D6;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            min-height: 50px;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .loading {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        .image-container {
+            margin-top: 10px;
+        }
+        .image-container img {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .test-all {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .test-all button {
+            background: #28a745;
+            padding: 15px 30px;
+            font-size: 16px;
+        }
+        .test-all button:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Flask API 測試頁面</h1>
+        
+        <div class="test-all">
+            <button onclick="testAllAPIs()">測試所有 API</button>
+        </div>
+
+        <!-- API Text 測試 -->
+        <div class="api-section">
+            <div class="api-title">1. /api/text - 文字回應測試</div>
+            <p>這個 API 應該回應 "hello world"</p>
+            <button onclick="testTextAPI()">測試 /api/text</button>
+            <div id="text-result" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- API Google 測試 -->
+        <div class="api-section">
+            <div class="api-title">2. /api/google - 圖片回應測試</div>
+            <p>這個 API 應該回應一張 Google 風格的圖片</p>
+            <button onclick="testGoogleAPI()">測試 /api/google</button>
+            <div id="google-result" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- API Time 測試 -->
+        <div class="api-section">
+            <div class="api-title">3. /api/time - 時間回應測試</div>
+            <p>這個 API 應該回應現在的時間</p>
+            <button onclick="testTimeAPI()">測試 /api/time</button>
+            <div id="time-result" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // 配置 API 基礎 URL
+        // 當使用 Apache 反向代理時，使用相對路徑
+        // 當直接測試時，可以改為 'http://localhost:8080'
+        const API_BASE_URL = './';
+
+        // 顯示結果的輔助函數
+        function showResult(elementId, content, type = 'success') {
+            const element = document.getElementById(elementId);
+            element.className = `result ${type}`;
+            element.innerHTML = content;
+            element.style.display = 'block';
+        }
+
+        // 顯示載入狀態
+        function showLoading(elementId) {
+            showResult(elementId, '載入中...', 'loading');
+        }
+
+        // 測試 /api/text
+        async function testTextAPI() {
+            const resultId = 'text-result';
+            showLoading(resultId);
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/text`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                const content = `
+                    <strong>請求成功！</strong><br>
+                    <strong>狀態:</strong> ${response.status} ${response.statusText}<br>
+                    <strong>回應:</strong><br>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                showResult(resultId, content, 'success');
+                
+            } catch (error) {
+                const content = `
+                    <strong>請求失敗！</strong><br>
+                    <strong>錯誤:</strong> ${error.message}<br>
+                    <em>請確認 Flask 伺服器是否正在運行於 ${API_BASE_URL}</em>
+                `;
+                showResult(resultId, content, 'error');
+            }
+        }
+
+        // 測試 /api/google
+        async function testGoogleAPI() {
+            const resultId = 'google-result';
+            showLoading(resultId);
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/google`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                // 檢查回應類型
+                const contentType = response.headers.get('content-type');
+                
+                if (contentType && contentType.includes('image')) {
+                    // 如果是圖片，創建圖片元素
+                    const blob = await response.blob();
+                    const imageUrl = URL.createObjectURL(blob);
+                    
+                    const content = `
+                        <strong>請求成功！</strong><br>
+                        <strong>狀態:</strong> ${response.status} ${response.statusText}<br>
+                        <strong>內容類型:</strong> ${contentType}<br>
+                        <div class="image-container">
+                            <img src="${imageUrl}" alt="Google Style Image" />
+                        </div>
+                    `;
+                    showResult(resultId, content, 'success');
+                } else {
+                    // 如果不是圖片，嘗試解析為 JSON
+                    const data = await response.json();
+                    const content = `
+                        <strong>請求成功，但回應不是圖片</strong><br>
+                        <strong>狀態:</strong> ${response.status} ${response.statusText}<br>
+                        <strong>內容類型:</strong> ${contentType}<br>
+                        <strong>回應:</strong><br>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                    showResult(resultId, content, 'error');
+                }
+                
+            } catch (error) {
+                const content = `
+                    <strong>請求失敗！</strong><br>
+                    <strong>錯誤:</strong> ${error.message}<br>
+                    <em>請確認 Flask 伺服器是否正在運行於 ${API_BASE_URL}</em>
+                `;
+                showResult(resultId, content, 'error');
+            }
+        }
+
+        // 測試 /api/time
+        async function testTimeAPI() {
+            const resultId = 'time-result';
+            showLoading(resultId);
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/time`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                const content = `
+                    <strong>請求成功！</strong><br>
+                    <strong>狀態:</strong> ${response.status} ${response.statusText}<br>
+                    <strong>回應:</strong><br>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                    <strong>格式化時間:</strong> ${data.current_time}<br>
+                    <strong>時間戳:</strong> ${data.timestamp}<br>
+                    <strong>時區:</strong> ${data.timezone}
+                `;
+                showResult(resultId, content, 'success');
+                
+            } catch (error) {
+                const content = `
+                    <strong>請求失敗！</strong><br>
+                    <strong>錯誤:</strong> ${error.message}<br>
+                    <em>請確認 Flask 伺服器是否正在運行於 ${API_BASE_URL}</em>
+                `;
+                showResult(resultId, content, 'error');
+            }
+        }
+
+        // 測試所有 API
+        async function testAllAPIs() {
+            await testTextAPI();
+            await new Promise(resolve => setTimeout(resolve, 500)); // 等待 500ms
+            await testGoogleAPI();
+            await new Promise(resolve => setTimeout(resolve, 500)); // 等待 500ms
+            await testTimeAPI();
+        }
+
+        // 頁面載入完成後的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Flask API 測試頁面已載入');
+            console.log('API 基礎 URL:', API_BASE_URL);
+        });
+    </script>
+</body>
+</html>

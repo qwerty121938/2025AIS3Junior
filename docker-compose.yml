@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  ctf-challenge:
+    build: .
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    container_name: ctf-challenge-2025
+    labels:
+      - "challenge=ais3junior"
+      - "year=2025"
+    environment:
+      - ENV=production
