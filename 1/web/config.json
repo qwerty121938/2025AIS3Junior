@@ -1,0 +1,25 @@
+{
+    "user": [
+        {
+            "id": 1,
+            "type": "ta"
+        },
+        {
+            "id": 2,
+            "type": "ta"
+        },
+        {
+            "id": 3,
+            "type": "sponsor"
+        },
+        {
+            "id": 4,
+            "type": "sponsor"
+        },
+        {
+            "id": 5,
+            "type": "sponsor"
+        }
+
+    ]
+}

@@ -1,0 +1,20 @@
+FROM php:8.2-apache-buster
+
+# 刪掉預設的 index.html
+RUN rm -f /var/www/html/index.html
+
+# 複製專案內容
+COPY web /var/www/html
+WORKDIR /var/www/html
+
+# 複製 Apache vhost 設定
+COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
+
+# 啟用 rewrite 與 proxy 模組
+RUN a2enmod rewrite proxy proxy_http
+
+# 修正日誌路徑
+RUN sed -i 's|\${APACHE_LOG_DIR}|/var/log/apache2|g' /etc/apache2/sites-available/000-default.conf
+
+EXPOSE 80
+CMD ["apache2-foreground"]

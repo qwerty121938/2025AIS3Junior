@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  ais2-junior-revenge:
+    build: .
+    ports:
+      - "2000:80"
+    restart: unless-stopped
+    container_name: ais2-junior-revenge

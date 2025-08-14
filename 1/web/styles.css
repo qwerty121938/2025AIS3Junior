@@ -1,0 +1,51 @@
+body {
+    font-family: Noto Sans, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+nav {
+    background-color: white;
+    padding: 1rem;
+    margin: 0;
+}
+
+nav h1 {
+    margin: 0;
+}
+
+main {
+    display: flex;
+    background-color: #e3b57f;
+    padding: 2rem;
+    flex-direction: column;
+    align-items: center;
+}
+
+.usercomponent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.userdiv {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    margin-bottom: 1rem;
+}
+
+.user {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 200px;
+    width: 150px;
+    padding: 1rem;
+}
+
+.user img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
